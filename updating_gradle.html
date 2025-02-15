@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Render Table from API</title>
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 20px 0;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- <h1>Android Gradle Plugin Table</h1> -->
+    <div id="table-container">Loading table...</div>
+
+    <script>
+      // 指定要获取的表格索引
+      const tableIndex = 0;
+      // API 的 URL（请根据实际情况调整域名和端点）
+      const apiUrl = `https://agpapi-production.up.railway.app/table/0`;
+
+      // 异步函数，获取表格数据
+      async function fetchTableData() {
+        try {
+          const response = await fetch(apiUrl);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          return data.rows;
+        } catch (error) {
+          console.error("Error fetching table data:", error);
+          return null;
+        }
+      }
+
+      // 将二维数组数据渲染为 HTML 表格
+      function renderTable(rows) {
+        if (!rows || !rows.length) {
+          document.getElementById("table-container").textContent =
+            "No table data available.";
+          return;
+        }
+
+        const table = document.createElement("table");
+
+        rows.forEach((row, rowIndex) => {
+          const tr = document.createElement("tr");
+          row.forEach((cell) => {
+            // 第一行使用 th，其它行使用 td
+            const cellElement = document.createElement(
+              rowIndex === 0 ? "th" : "td"
+            );
+            cellElement.textContent = cell;
+            tr.appendChild(cellElement);
+          });
+          table.appendChild(tr);
+        });
+
+        const container = document.getElementById("table-container");
+        container.innerHTML = ""; // 清空加载信息
+        container.appendChild(table);
+      }
+
+      // 调用函数获取数据并渲染表格
+      fetchTableData().then(renderTable);
+    </script>
+  </body>
+</html>
